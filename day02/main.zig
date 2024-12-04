@@ -50,11 +50,9 @@ fn part2(input: []const u8) !u32 {
         const a0 = try std.fmt.parseInt(i32, first, 10);
         const a1 = try std.fmt.parseInt(i32, second, 10);
 
-        const Rec = struct { asc: ?bool };
-
-        var r0: ?Rec = .{ .asc = null };
-        var r1: ?Rec = if (a1 != a0 and @abs(a1 - a0) <= 3) .{ .asc = a1 > a0 } else null;
-        var r2: ?Rec = .{ .asc = null };
+        var r0: ??bool = @as(?bool, null);
+        var r1: ??bool = if (a1 != a0 and @abs(a1 - a0) <= 3) a1 > a0 else null;
+        var r2: ??bool = @as(?bool, null);
 
         var pp = a0;
         var p = a1;
@@ -66,31 +64,31 @@ fn part2(input: []const u8) !u32 {
                 p = a;
             }
 
-            var nr1: ?Rec = null; // skipped
-            var nr2: ?Rec = null; // unskipped
+            var nr1: ??bool = null;
+            var nr2: ??bool = null;
 
             // eww
             if (a != p and @abs(a - p) <= 3) {
                 const asc = a > p;
                 if (r1) |r| {
-                    if (r.asc == null or r.asc == asc)
-                        nr1 = .{ .asc = asc };
+                    if (r == null or r == asc)
+                        nr1 = asc;
                 }
 
                 if (r2) |r| {
-                    if (r.asc == null or r.asc == asc)
-                        nr2 = .{ .asc = asc };
+                    if (r == null or r == asc)
+                        nr2 = asc;
                 }
             }
 
             if (a != pp and @abs(a - pp) <= 3) {
                 const asc = a > pp;
                 if (r0) |r| {
-                    if (r.asc == null or r.asc == asc) {
-                        if (nr2) |x| {
-                            if (x.asc != asc) nr2 = .{ .asc = null };
-                        } else {
-                            nr2 = .{ .asc = asc };
+                    if (r == null or r == asc) {
+                        if (nr2 == null) {
+                            nr2 = asc;
+                        } else if (nr2 != asc) {
+                            nr2 = @as(?bool, null);
                         }
                     }
                 }
